@@ -1,10 +1,12 @@
--Dette dokumentet viser filoppsettet som de ansatte i en bedrift skal leses fra.
--Hver ansatt skal være tilordnet en egen avdeling i bedriften. Hver avdeling for sin egen bokstav i filformatet:
--	D = Developers
--	H = HR
--	I = IT Admins
--	R = Regnskap
--	V = Renhold
+Dette dokumentet viser filoppsettet som de ansatte i en bedrift skal leses fra.
+Hver ansatt skal være tilordnet en egen avdeling i bedriften.
+
+Hver avdeling får sin egen bokstav i filformatet:
+	D = Developers
+	H = HR
+	I = IT Admins
+	R = Regnskap
+	V = Renhold
 
 	Format på filavlesning:
 
