@@ -1,0 +1,187 @@
+#File is sent as a parameter
+param(
+    [parameter(mandatory=$true)][string] $file
+)
+
+############################### IMPORTANT DECLARATIONS  ###########################
+$totalEmployees = @{}
+$defaultPassword = ConvertTo-SecureString "DefaultPassword@98" -AsPlainText -Force                       # LAG ET STERKERE PASSORD   ///   DefaultPassword@98    ////
+$Domain = "OU=Ansatt,DC=sec,DC=core"
+$ErrorFileName = "\Errors_Add-Users_Script.txt"
+$ErrorCounter = 0
+$StartDateLog = Get-Date
+
+############################### FUNCTIONS  #########################################
+
+#Get-Username checks if the desired username is taken. If so, a new username will be generated
+function Get-Username {
+    param (
+        [Parameter(mandatory)]
+        [String] $Name
+    )
+    $counterName1 = 3           #Counter for first name
+    $counterName2 = 3           #Counter for last name
+    $LastResortCounter = 0      #Counter for last resort option
+
+    $NewName = $Name.split(" ")
+
+    # Generate a username based on 3 chars from firstname and surname. Only lowercase letters
+    $username = $NewName[0].substring(0,$counterName1).toLower() + $NewName[1].substring(0,$counterName2).toLower()
+
+    #Checks if the desired username is available, if not, a new username will be generated and checked
+    while( [bool](Get-ADUser -Filter {SamAccountName -eq $username}) ) {
+            #Takes more chars from first name
+        if( $counterName1 -lt $NewName[0].length){
+            $counterName1++
+            $username = $NewName[0].substring(0,$counterName1).toLower() + $NewName[1].substring(0,3).toLower()
+
+             #Takes more chars from last name
+        } elseif ($counterName2 -lt $NewName[1].length) {
+            $counterName2++
+            $username = $NewName[0].substring(0,3).toLower() + $NewName[1].substring(0,$counterName2).toLower()
+
+            #Uses 3+3 char username, but a number is added
+        }else {
+            while ([bool](Get-ADUser -Filter {SamAccountName -eq $username})) {
+                $LastResortCounter++
+                $username = $NewName[0].substring(0,3).toLower() + $NewName[1].substring(0,3).toLower() + $LastResortCounter
+            } 
+        }
+    }
+    return $username   
+}
+
+#Write-ErrorToFile writes error to a specific file to provide information about the problems
+function Write-ErrorToFile {
+    param (
+       [Parameter(Mandatory)]
+       [ValidateSet("OU", "File")]
+       [String] $Type,
+
+       [Parameter(Mandatory)]
+       [String] $File,
+       
+       [Parameter(Mandatory)]
+       [String] $ErrorFileName,
+       
+       [Parameter(Mandatory)]
+       [Int] $Counter
+    )
+
+    $CurrentPath = (Get-Location).ToString()
+    $FullPath = $CurrentPath + $ErrorFileName
+
+
+        #Test if the file exist
+    if ( -Not (Test-Path $FullPath) ){
+        New-Item -Path $FullPath -ItemType "File"
+    } else {
+        Set-ItemProperty $FullPath -Name IsReadOnly -Value $false
+    }
+        #Writes to file
+    if ($Type -eq "OU"){
+        Write-Output "$Counter. The '$File' file contains an unknowned character, which do not represent any valid department" | Out-File -FilePath $FullPath -Append
+    } else {
+        Write-Output "$Counter. The '$File' is not a file" | Out-File -FilePath $FullPath -Append
+    }
+
+    Set-ItemProperty $FullPath -Name IsReadOnly -Value $true
+}
+
+function Test-Name {
+    param (
+        [Parameter(mandatory)]
+        [String] $Name
+    )
+
+    $NameLower = $Name.toLower()
+    $IllegalChar = @('æ','ø','å')
+
+    foreach ($Char in $IllegalChar) {
+        if ($char -eq 'æ'){
+            $nameLower = $NameLower.replace("æ", "ae")
+        } elseif ($char -eq 'ø'){
+            $nameLower = $NameLower.replace("ø", "ou")
+        } elseif ($char -eq 'å'){
+            $nameLower = $NameLower.replace("å", "aa")
+        }
+    }
+    
+    
+    return $nameLower
+}
+
+############################### ADD USERS  #############################################
+
+#Check if the parameter is a csv file. 
+if ( (Get-Item $file).Extension -eq ".csv"){
+
+    $totalEmployees = Import-Csv $File -delimiter ";"
+
+    #Iterating through every user and adds them to the AD structure
+    foreach ($employee in $totalEmployees) {
+
+        #Checking which department every user belongs to and sets the right path
+        if ($employee.Department -eq 'Developers'){                            # D --> Developers
+            $Path = "OU=U_Developers," + $Domain
+            $ValidPath = $true
+        } elseif ($employee.Department -eq 'HR') {                     # H --> HR
+            $Path = "OU=U_HR," + $Domain
+            $ValidPath = $true
+        } elseif ($employee.Department -eq 'IT-Admin') {                     # I --> IT admins
+            $Path = "OU=U_IT-admin," + $Domain
+            $ValidPath = $true
+        } elseif ($employee.Department -eq 'Regnskap') {                     # R --> Regnskap
+            $Path = "OU=U_Regnskap," + $Domain
+            $ValidPath = $true
+        } elseif ($employee.Department -eq 'Renhold') {                     # V = Vask --> Renhold. Had to differ between Regnskap and Renhold 
+            $Path = "OU=U_Renhold," + $Domain
+            $ValidPath = $true
+        } else {
+            Write-ErrorToFile -Type "OU" -File $file -Counter (++$ErrorCounter) -ErrorFileName $ErrorFileName
+            $ValidPath = $false
+        }
+
+            # Adds user to an Organizational Unit if the path is correct
+        if ($ValidPath ){ 
+
+            $ValidName = Test-Name -Name $employee.name
+            
+            $username = Get-Username -Name $ValidName
+            $Name = ($employee.Name).split(" ")
+
+            $employeeInfo = @{
+                Name                    = $username
+                DisplayName             = $employee.Name
+                GivenName               = $Name[0]
+                Surname                 = $Name[1]
+                SamAccountName          = $username
+                UserprincipalName       = $username + "@sec.core"
+                Path                    = $Path
+                AccountPassword         = $defaultPassword
+                Enabled                 = $true
+                ChangePasswordAtLogon   = $true
+                Department              = $employee.Department
+            }
+
+            new-aduser @employeeInfo
+            Write-host "User is added!"
+        }
+        
+    }
+
+    # The file does not exist
+} else{
+    Write-ErrorToFile -Type "File" -File $file -Counter (++$ErrorCounter) -ErrorFileName $ErrorFileName
+}
+
+
+############################################################
+
+.\Check-UserCreation.ps1 -Date $StartDateLog -NumberOfCreations ($totalEmployees.length)
+
+
+#Write info about errors to user
+if ($ErrorCounter){
+    Write-Output "`n#####  This script generated $ErrorCounter ERRORS. Read generated file '$ErrorFileName' for information  #####`n"
+}

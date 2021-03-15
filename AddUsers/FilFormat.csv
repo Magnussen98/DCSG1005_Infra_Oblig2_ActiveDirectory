@@ -1,0 +1,6 @@
+Add-UsersV2.ps1 leser fra en ".csv" fil som skal benytte dette filformatet
+Parameterne skilles med ';'
+
+	Format på filavlesning:
+
+<Navn>;<Avdeling>
