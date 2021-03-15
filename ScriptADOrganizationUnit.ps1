@@ -1,5 +1,5 @@
     #Filen "OUstructure.csv inneholder OU strukturen, og kan enkelt endres"
-Get-Content 'C:\Users\Admin\Desktop\Script Prot 2\OUStructure.csv' | ForEach-Object{
+Get-Content 'C:\Users\Admin\Desktop\albegra-a2\OUStructure.csv' | ForEach-Object{
     $domainName = 'DC=sec,DC=core'
     $ouPath = ''
         #OU(Organizational Unit) og lager et reversjert array, slik at det leses fra toppen
