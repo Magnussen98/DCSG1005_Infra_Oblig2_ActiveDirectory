@@ -4,13 +4,8 @@ Ansatt\U_HR
 Ansatt\U_Developers
 Ansatt\U_Regnskap
 Ansatt\U_Renhold
-Laptop
-Laptop\C_IT-admin
-Laptop\C_HR
-Laptop\C_Developer
-Laptop\C_Regnskap
-Laptop\C_Renhold
 Ressurser
-Ressurser/R_skriver
-Ressurser/R_TigangTilBygg
+Ressurser\R_Skriver
+Ressurser\R_TigangTilBygg
+PC
 Server
