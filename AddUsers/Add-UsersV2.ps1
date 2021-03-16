@@ -196,7 +196,7 @@ if ( (Get-Item $file).Extension -eq ".csv"){
                 Path                    = $Path
                 AccountPassword         = $password
                 Enabled                 = $true
-                ChangePasswordAtLogon   = $true
+                ChangePasswordAtLogon   = $false
                 Department              = $employee.Department
             }
 
