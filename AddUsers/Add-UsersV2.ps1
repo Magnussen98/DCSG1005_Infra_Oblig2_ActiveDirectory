@@ -48,16 +48,16 @@ function Get-Username {
         }
     }
     return $username   
-}
-# Generate a random password
-function Get-Password {
-    $password = -join `
-    ('abcdefghkmnrstuvwxyzABCDEFGHKLMNPRSTUVWXYZ23456789 !"#$%&()*+,-./:;<=>?@[\]^_`{|}~'.ToCharArray() | 
-     Get-Random -Count 16)
-
-     return $password
-    
-}
+}   
+# Generate a random password            UNCOMMENT
+#function Get-Password {
+#    $password = -join `
+#    ('abcdefghkmnrstuvwxyzABCDEFGHKLMNPRSTUVWXYZ23456789 !"#$%&()*+,-./:;<=>?@[\]^_`{|}~'.ToCharArray() | 
+#     Get-Random -Count 16)
+#
+#     return $password
+#    
+#}
 
 #Write-ErrorToFile writes error to a specific file to provide information about the problems
 function Write-ErrorToFile {
@@ -179,7 +179,8 @@ if ( (Get-Item $file).Extension -eq ".csv"){
             $username = Get-Username -Name $ValidName   # Call function to generate a username
             $Name = ($employee.Name).split(" ")
 
-            $password =  Get-Password           # Call function to genereate a password
+            #$password =  Get-Password           # Call function to genereate a password    UNCOMMENT
+            $password = "PassPhrase98-"
             
             Save-UserCredentials -Username $username -Password $password     # Call function to store credentials
 
