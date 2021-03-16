@@ -5,7 +5,6 @@ param(
 
 ############################### IMPORTANT DECLARATIONS  ###########################
 $totalEmployees = @{}
-$defaultPassword = ConvertTo-SecureString "DefaultPassword@98" -AsPlainText -Force                       # LAG ET STERKERE PASSORD   ///   DefaultPassword@98    ////
 $Domain = "OU=Ansatt,DC=sec,DC=core"
 $ErrorFileName = "\Errors_Add-Users_Script.txt"
 $ErrorCounter = 0
@@ -49,6 +48,15 @@ function Get-Username {
         }
     }
     return $username   
+}
+# Generate a random password
+function Get-Password {
+    $password = -join `
+    ('abcdefghkmnrstuvwxyzABCDEFGHKLMNPRSTUVWXYZ23456789 !"#$%&()*+,-./:;<=>?@[\]^_`{|}~'.ToCharArray() | 
+     Get-Random -Count 16)
+
+     return $password
+    
 }
 
 #Write-ErrorToFile writes error to a specific file to provide information about the problems
@@ -107,8 +115,29 @@ function Test-Name {
         }
     }
     
-    
     return $nameLower
+}
+
+# Save user credentitals to a file and limit the access to read only
+function Save-UserCredentials {
+    param (
+        [Parameter(Mandatory)]
+        [String] $username,
+        
+        [Parameter(Mandatory)]
+        [String] $password
+    )
+
+    $passwordPath = (Get-Location).toString() + "\PasswordManager.txt"
+            
+    if (-Not (Test-Path $passwordPath) ){
+        New-Item -Path $passwordPath -ItemType "File"
+    } else{
+        Set-ItemProperty $passwordPath -Name IsReadOnly -Value $false     # Give write access
+    }
+
+    Write-Output "$username     -     $password" | Out-File -FilePath $passwordPath -Append
+    Set-ItemProperty $passwordPath -Name IsReadOnly -Value $true     # Limit the access back to read-only  
 }
 
 ############################### ADD USERS  #############################################
@@ -145,11 +174,17 @@ if ( (Get-Item $file).Extension -eq ".csv"){
             # Adds user to an Organizational Unit if the path is correct
         if ($ValidPath ){ 
 
-            $ValidName = Test-Name -Name $employee.name
+            $ValidName = Test-Name -Name $employee.name     # Call function to check the name for illegal char
             
-            $username = Get-Username -Name $ValidName
+            $username = Get-Username -Name $ValidName   # Call function to generate a username
             $Name = ($employee.Name).split(" ")
 
+            $password =  Get-Password           # Call function to genereate a password
+            
+            Save-UserCredentials -Username $username -Password $password     # Call function to store credentials
+
+            $password =  ConvertTo-SecureString $password -AsPlainText -Force   #Converting the password to a secure string
+            Write-progress "Adding users...."
             $employeeInfo = @{
                 Name                    = $username
                 DisplayName             = $employee.Name
@@ -158,14 +193,13 @@ if ( (Get-Item $file).Extension -eq ".csv"){
                 SamAccountName          = $username
                 UserprincipalName       = $username + "@sec.core"
                 Path                    = $Path
-                AccountPassword         = $defaultPassword
+                AccountPassword         = $password
                 Enabled                 = $true
                 ChangePasswordAtLogon   = $true
                 Department              = $employee.Department
             }
 
             new-aduser @employeeInfo
-            Write-host "User is added!"
         }
         
     }
@@ -183,5 +217,5 @@ if ( (Get-Item $file).Extension -eq ".csv"){
 
 #Write info about errors to user
 if ($ErrorCounter){
-    Write-Output "`n#####  This script generated $ErrorCounter ERRORS. Read generated file '$ErrorFileName' for information  #####`n"
+    Write-Error "`n#####  This script generated $ErrorCounter ERRORS. Read generated file '$ErrorFileName' for information  #####`n"
 }
