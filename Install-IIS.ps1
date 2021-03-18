@@ -8,8 +8,12 @@ if ( -Not $choco ){
 }
 
 if ( -Not $zip ){
-    choco install 7zip.install
+    choco install -y 7zip.install
 }
 
 $url = 'https://www.free-css.com/assets/files/free-css-templates/download/page265/confer.zip'
-$destination = "C:\Users\$env:domain.$env:UserDomain" 
+$destination = "$HOME\Downloads\confer.zip"
+
+Invoke-WebRequest -Uri $url -OutFile $destination
+7z x $destination -ofolder
+
