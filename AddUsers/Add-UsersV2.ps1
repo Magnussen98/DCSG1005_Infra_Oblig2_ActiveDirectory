@@ -44,19 +44,19 @@ function Get-Username {
             while ([bool](Get-ADUser -Filter {SamAccountName -eq $username})) {
                 $LastResortCounter++
                 $username = $NewName[0].substring(0,3).toLower() + $NewName[1].substring(0,3).toLower() + $LastResortCounter
-            } 
+            }
         }
     }
-    return $username   
-}   
+    return $username
+}
 # Generate a random password            UNCOMMENT
 #function Get-Password {
 #    $password = -join `
-#    ('abcdefghkmnrstuvwxyzABCDEFGHKLMNPRSTUVWXYZ23456789 !"#$%&()*+,-./:;<=>?@[\]^_`{|}~'.ToCharArray() | 
+#    ('abcdefghkmnrstuvwxyzABCDEFGHKLMNPRSTUVWXYZ23456789 !"#$%&()*+,-./:;<=>?@[\]^_`{|}~'.ToCharArray() |
 #     Get-Random -Count 16)
 #
 #     return $password
-#    
+#
 #}
 
 #Write-ErrorToFile writes error to a specific file to provide information about the problems
@@ -68,10 +68,10 @@ function Write-ErrorToFile {
 
        [Parameter(Mandatory)]
        [String] $File,
-       
+
        [Parameter(Mandatory)]
        [String] $ErrorFileName,
-       
+
        [Parameter(Mandatory)]
        [Int] $Counter
     )
@@ -114,7 +114,7 @@ function Test-Name {
             $nameLower = $NameLower.replace("å", "aa")
         }
     }
-    
+
     return $nameLower
 }
 
@@ -123,13 +123,13 @@ function Save-UserCredentials {
     param (
         [Parameter(Mandatory)]
         [String] $username,
-        
+
         [Parameter(Mandatory)]
         [String] $password
     )
 
     $passwordPath = (Get-Location).toString() + "\PasswordManager.txt"
-            
+
     if (-Not (Test-Path $passwordPath) ){
         New-Item -Path $passwordPath -ItemType "File"
     } else{
@@ -137,12 +137,12 @@ function Save-UserCredentials {
     }
 
     Write-Output "$username     -     $password" | Out-File -FilePath $passwordPath -Append
-    Set-ItemProperty $passwordPath -Name IsReadOnly -Value $true     # Limit the access back to read-only  
+    Set-ItemProperty $passwordPath -Name IsReadOnly -Value $true     # Limit the access back to read-only
 }
 
 ############################### ADD USERS  #############################################
 
-#Check if the parameter is a csv file. 
+#Check if the parameter is a csv file.
 if ( (Get-Item $file).Extension -eq ".csv"){
 
     $totalEmployees = Import-Csv $File -delimiter ";"
@@ -163,7 +163,7 @@ if ( (Get-Item $file).Extension -eq ".csv"){
         } elseif ($employee.Department -eq 'Regnskap') {                     # R --> Regnskap
             $Path = "OU=U_Regnskap," + $Domain
             $ValidPath = $true
-        } elseif ($employee.Department -eq 'Renhold') {                     # V = Vask --> Renhold. Had to differ between Regnskap and Renhold 
+        } elseif ($employee.Department -eq 'Renhold') {                     # V = Vask --> Renhold. Had to differ between Regnskap and Renhold
             $Path = "OU=U_Renhold," + $Domain
             $ValidPath = $true
         } else {
@@ -172,16 +172,16 @@ if ( (Get-Item $file).Extension -eq ".csv"){
         }
 
             # Adds user to an Organizational Unit if the path is correct
-        if ($ValidPath ){ 
+        if ($ValidPath ){
 
             $ValidName = Test-Name -Name $employee.name     # Call function to check the name for illegal char
-            
+
             $username = Get-Username -Name $ValidName   # Call function to generate a username
             $Name = ($employee.Name).split(" ")
 
             #$password =  Get-Password           # Call function to genereate a password    UNCOMMENT
             $password = "PassPhrase98-"
-            
+
             Save-UserCredentials -Username $username -Password $password     # Call function to store credentials
 
             $password =  ConvertTo-SecureString $password -AsPlainText -Force   #Converting the password to a secure string
@@ -196,13 +196,13 @@ if ( (Get-Item $file).Extension -eq ".csv"){
                 Path                    = $Path
                 AccountPassword         = $password
                 Enabled                 = $true
-                ChangePasswordAtLogon   = $false
+                ChangePasswordAtLogon   = $false        #Change to true
                 Department              = $employee.Department
             }
 
             new-aduser @employeeInfo
         }
-        
+
     }
 
     # The file does not exist

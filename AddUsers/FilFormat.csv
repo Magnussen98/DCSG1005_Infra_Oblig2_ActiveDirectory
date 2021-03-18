@@ -3,4 +3,7 @@ Parameterne skilles med ';'
 
 	Format på filavlesning:
 
+# Først linje skal være en header:
+Navn;Avdeling
+# Deretter skal de ansatte bli listet nedover:
 <Navn>;<Avdeling>
