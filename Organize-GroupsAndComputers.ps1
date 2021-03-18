@@ -36,14 +36,14 @@ if ( $option -eq "Groups" -or (-not $isParam) ){
 
     foreach ($group in $parentGroup) {
         $Department = $group.replace("G_","")
-        # Get all the groups within OU "Ansatt" except "G_Ansatt"
+        # Get all the groups within parent OU except parent group
         $allGroups = Get-ADGroup -Filter {name -notlike $group} -SearchBase `
                     (Get-DistinguishedName -type "OU" -department $department)
 
-        # Add all the child groups to parent "G_Ansatt"
+        # Add all the child groups to parent group
         Add-ADGroupMember -Members $allGroups -Identity (Get-DistinguishedName -type "Group" -department $department)
 
-        # Retrieve all the groupmembers of G_Ansatt
+        # Retrieve all the groupmembers of parent group
         $allGroups = Get-ADGroupMember $group
 
         Write-Progress "Adding users to groups"
