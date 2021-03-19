@@ -1,11 +1,10 @@
-#Get-Content 'C:\Users\Admin\Desktop\albegra-a2\GroupStructure.csv' | ForEach-Object{
 #Sender med fil som parameter
 param(
     [parameter(mandatory=$true)]
     [string] $file
 )
 if ( (Get-Item $file).Extension -eq ".csv"){
-     #Filen "OUstructure.csv inneholder OU strukturen, og kan enkelt endres"
+     #Filen "GroupStructure.csv inneholder Gruppestrukturen, og kan enkelt endres"
     Get-Content $file | ForEach-Object{
         $domainName = 'DC=sec,DC=core'
         $GroupPath = ''
@@ -18,10 +17,15 @@ if ( (Get-Item $file).Extension -eq ".csv"){
                 $GroupPath = $GroupPath + 'OU=' + $_ + ','
             }
             $GroupPath += $domainName
-            
-        #echo $GroupPath
+
             $newGroupName = split-path $_ -Leaf  
-        #echo "G_$newGroupName"
+        
+        if($GroupPath -like "OU=R_*"){
+             New-ADGroup -GroupCategory Security -GroupScope DomainLocal -Name  "G_$newGroupName" -Path $GroupPath
+        }
+        else{
             New-ADGroup -GroupCategory Security -GroupScope Global -Name  "G_$newGroupName" -Path $GroupPath
+        }
+          
         }
 }
