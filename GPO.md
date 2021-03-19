@@ -60,19 +60,15 @@ Gå til:
 ### Administrator 
     Åpne Browse for a Group Policy Object med komandoen "gpme" i PowerShell. 
     Påse at du står i  "sec.core"
-
     Høyreklikk -> new og gi den navnet GPO_Admin_Rettigheter
     Dobbletklikk for å endre objektet. 
 
 Gå til:
 
     Computer Configuration -> Policies -> Windows Settings -> Security Settings -> Restricted Groups
-    
     Høyreklikk -> add group -> G_IT-admin -> ok
-
     Under "this group is a member of   " legger du inn: 
     Administrators'
-
     klikk ok -> apply -> ok
 
 
