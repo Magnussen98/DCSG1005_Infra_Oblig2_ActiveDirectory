@@ -20,7 +20,7 @@ Målet med prosjeket er å bli enda bedre kjent med AD og automatisering av opps
 ## Design 
 >Hoveddesign
 
-[OU-struktur](https://gitlab.stud.idi.ntnu.no/andrefm/albegra-a2/-/blob/master/Oppsett%20AD.pdf) 
+[AD-struktur](https://gitlab.stud.idi.ntnu.no/andrefm/albegra-a2/-/blob/master/Oppsett%20AD.pdf) 
 
 Beskrivelse av oppsett ? 
 
