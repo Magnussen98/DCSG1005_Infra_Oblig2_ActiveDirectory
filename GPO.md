@@ -35,16 +35,6 @@ Gå til:
     Høyreklikk -> new og gi den navnet GPO_IT-admin
     Dobbletklikk for å endre objektet. 
 
-
-### Administrator 
-    Computer Configuration -> Policies -> Windows Settings -> Security Settings -> Restricted Groups
-    Høyreklikk -> add group -> G_IT-admin -> ok
-    #Under "this group is a member of   " legger du inn: 
-        Administrators
-    #klikk ok -> apply -> ok
-
-
-
 ### Control Panel
 
 Gå til:
@@ -57,6 +47,19 @@ Gå til:
 Gå til:
     User Configuration -> Policies -> Administrative Templates -> System
     Dobbeltklikk på "Prevent access to the command prompt" -> disable -> klikk Apply så ok
+
+
+### Administrator 
+    Åpne Browse for a Group Policy Object med komandoen "gpme" i PowerShell. 
+    Påse at du står i  "sec.core"
+
+    Høyreklikk -> new og gi den navnet GPO_Admin_Rettigheter
+    Dobbletklikk for å endre objektet. 
+    Computer Configuration -> Policies -> Windows Settings -> Security Settings -> Restricted Groups
+    Høyreklikk -> add group -> G_IT-admin -> ok
+    #Under "this group is a member of   " legger du inn: 
+        Administrators
+    #klikk ok -> apply -> ok
 
 
 ## cl1
