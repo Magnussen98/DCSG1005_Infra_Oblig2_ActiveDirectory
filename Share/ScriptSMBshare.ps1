@@ -4,6 +4,7 @@ param(
     [string] $file
 )
 
+Enter-PSSession srv1
 #inslall module on srv1
 Install-WindowsFeature -Name FS-DFS-Namespace,FS-DFS-Replication,RSAT-DFS-Mgmt-Con -IncludeManagementTools
 Import-Module dfsn
@@ -11,12 +12,21 @@ Import-Module dfsn
 
 #henter ut "folders" fra medsendt fil
 $folders = get-content($file)
-#go to c:\
-cd c:\
 mkdir -path $folders
 
-$folders | ForEach-Object {$GroupName = (Get-Item $_).name;} | select -Skip 1
-$folders | ForEach-Object {$sharename = (Get-Item $_).name; New-SMBShare -Name $shareName -Path $_ -FullAccess "G_$GroupName"}
+## Dfsroot skal ha fullaccess everyone. skal være G_
+
+$folders | ForEach-Object {
+    $GroupName = (Get-Item $_).name
+    $path = $_
+    if ($GroupName -eq 'files'){
+        New-SMBShare -Name $GroupName -Path $path -FullAccess "Everyone"
+    } else {
+        $access = "sec\G_" + $GroupName
+        New-SMBShare -Name $GroupName -Path $path -FullAccess $access
+    }
+}
+
 
 New-DfsnRoot -TargetPath \\srv1\files -Path \\sec.core\files -Type DomainV2
 
