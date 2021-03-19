@@ -23,13 +23,17 @@ $folders | ForEach-Object {
         New-SMBShare -Name $GroupName -Path $path -FullAccess "Everyone"
     } else {
         $access = "sec\G_" + $GroupName
-        New-SMBShare -Name $GroupName -Path $path -FullAccess $access
+        #New-SMBShare -Name $GroupName -Path $path -FullAccess $access
+        New-SMBShare -Name $GroupName -Path $path -FullAccess "Everyone"
     }
 }
 
 
-New-DfsnRoot -TargetPath \\srv1\files -Path \\sec.core\files -Type DomainV2
+New-DfsnRoot -TargetPath "\\srv1\files" -Path \\sec.core\files -Type DomainV2
 
-$folders | Where-Object {$_ -like "*shares*"} | ForEach-Object {$name = (Get-Item $_).name; $DfsPath = (‘\\sec.core\files\’ + $name); $targetPath = (‘\\srv1\’ + $name);New-DfsnFolderTarget -Path $dfsPath -TargetPath $targetPath}
-
-
+$folders | Where-Object {$_ -like "*shares*"} | ForEach-Object {
+    $name = (Get-Item $_).name
+    $DfsPath = (‘\\sec.core\files\’ + $name)
+    $targetPath = (‘\\srv1\’ + $name)
+    New-DfsnFolderTarget -Path $dfsPath -TargetPath $targetPath
+}

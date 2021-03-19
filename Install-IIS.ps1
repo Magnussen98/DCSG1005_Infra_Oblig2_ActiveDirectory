@@ -17,3 +17,4 @@ $destination = "$HOME\Downloads\confer.zip"
 Invoke-WebRequest -Uri $url -OutFile $destination
 7z x $destination -ofolder
 
+Copy-Item -Path "$home\Downloads\folder" -Destination "\\sec.core\files\Developers\webpage" -Recurse -force
