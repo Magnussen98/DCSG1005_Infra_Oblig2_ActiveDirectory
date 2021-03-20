@@ -1,33 +1,48 @@
-# Overskrift - noe Kult !! 
+# AD-struktur Albegra-a2
 [Link](https://gitlab.stud.idi.ntnu.no/andrefm/albegra-a2) til GIR repo
 
 ## Innholdsfortegnelse
-1. "table of content"
-2. "klikk her"
-3. Klikk her
-4. etc 
-5. etc
+1. Mål med prosjektet
+2. Design
+   1. Generelt/intro/kort beskrivelse
+   2. Navnekonvensjon/navnestandard
+   3. Forklaring av hvert enkelt script
+      1. Filer som parameter
+      2. Add OU's
+      3. Add Groups
+      4. Add User
+      5. Organisering av struktur
+      6. GPO
+      7. Share (Filområder)
+      8. Install-IIS
+3. Drøfting
+4. Konklusjon
 
 
 
 ## Mål med prosjektet
 
-Gjennom dette semesteret har vi lært om Windows Server, Active Directory(AD), Powershell, kofugurasjon av nettverk med mer.
-Under temaet AD har vi lært om Oragnizational Units, AD-grupper og brukere og GPO, samt administrering av dette via PowerShell. 
+Gjennom dette semesteret har vi lært om Windows Server, Active Directory(AD), Powershell og kofugurasjon av nettverk.   
+Under temaet AD har vi lært om Oragnizational Units, AD-grupper og brukere, GPO, samt administrering av dette via PowerShell. 
 
-Målet med prosjeket er å bli enda bedre kjent med AD og automatisering av oppsett av en AD-struktur ved bruk av script. Vi har under hele prosjektperioden hatt sikkerhet i tankene, og har implemetert dette ved bruk av GPO. 
+Målet med prosjeket er å bli enda bedre kjent med AD og automatisering av oppsett og drift av en AD-struktur ved bruk av script. Vi har under hele prosjektperioden hatt sikkerhet i tankene, og har implemetert dette blant annet ved bruk av GPO. 
 
 ## Design 
->Hoveddesign
+[AD-strukturen](https://gitlab.stud.idi.ntnu.no/andrefm/albegra-a2/-/blob/master/Oppsett%20AD.pdf) er indelt slik at Ansatte, Ressurser og Maskiner (On-prem) har hver sin OU (Domain controller opprettes by default). Under ansatte ligger en global gruppe med hver avdelingsgruppe samt en OU pr. avdeling. Hver avdeling inneholder sine brukere, som ligger i den globale gruppen til avdelingen.
 
-[AD-struktur](https://gitlab.stud.idi.ntnu.no/andrefm/albegra-a2/-/blob/master/Oppsett%20AD.pdf) 
+For ressursene i bedriften er det opprettet en OU pr. ressurs. Pr. nå har vi opprettet Domain Local grupper til ressursene, som vi senere kan knytte opp mot bedriftens BRUKSOMRÅDE(?)  
 
-Beskrivelse av oppsett ? 
-
->vår NavnKonvensjon (G_ U_ R_ GPO_)
+ PC'er (cl1 i vårt tilfelle) og serverne i AD-strukturen har hver sin OU under On-prem, samt en egen gruppe. Dette tillater å deligere spesifikke restriksjoner/begrensinger til de ulike maskinene. 
 
 
->Forklaring / visning av hvert enkelt script
+
+## Navnekonvensjon 
+Ved opprettelse av objekter i vårt domene har vi valgt å implementere en fast navnestandard. Det vil si at noen av objektene som opprettes får en fast prefiks bokstav etterfulgt av_. F.eks. grupper får prefiks 'G_' etterfulgt av navnet. For OUer er 'U_' brukt for de som inneholder brukere (users) mens 'R_' er brukt for ressurser. Alle GPO'er vi oppretter starter med 'GPO_' etterfulgt av navnet på OU'en den skal linkes til.  FORKLARE HVORFOR (?)
+
+## Forklaring / visning av hvert enkelt script
+
+### Filer som parameter
+
 ### Add OU's
 
 [ScriptADOrganizationUnit.ps1](https://gitlab.stud.idi.ntnu.no/andrefm/albegra-a2/-/blob/master/OU/ScriptADOrganizationUnit.ps1) er inspirert av [Eric Magidson](https://www.youtube.com/watch?v=eIY1Plo7wXQ&t=37s). Scriptet tar inn en [CSV](https://gitlab.stud.idi.ntnu.no/andrefm/albegra-a2/-/blob/master/OU/OUStructure.csv) fil som inneholder OU-strukturen. Ved bruk av innholdet etablerer scriptet OU-strukturen i domenet. 
@@ -69,6 +84,17 @@ IT-administratorene på sin side har disse begrensningene fjernet (Med unntak av
 
 
 ## Drøfting
+- intro
+- sikkrehetsaspekter 
+- Fordeler/ulemper
+  - Med tanke på oppsett, Scripts, etc
+    - GPO
+  - Valg av grupper (Domain Local og Globale)
+  - Globale og lokale sikkerhetsgrupper
+  - oppretelse av AD ved bruk av script gjør at ... 
+  - Scriptene simplifiserer drift av systemene
+  - hva har vi ikke med/ønsker å ta med i en reell sammenheng
+
 Her drøfter vi sikkerhetsaspekter, oppsett, fordeler/ulemper med mer .... 
 
 Felles for alle scriptene er at de tar inn filer som parameter for oppsett 
@@ -81,5 +107,10 @@ GPO'er:
 - Comand prompt disablet, men de har tilgang til powershell .. 
 - IKKE SIKKERT NOK, MEN ET HAR FÅTT TESTET OSS PÅ GPO
 
+## Konklusjon
+- hva vi har lært 
+- hva vi synes om oppgaven
+- arbeidsprosessen
+- hvilke muligheter dette gir oss vidre
 
-## av Andreas og KristofferHei
+## av Andreas og Kristoffer
