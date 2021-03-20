@@ -17,4 +17,11 @@ $destination = "$HOME\Downloads\confer.zip"
 Invoke-WebRequest -Uri $url -OutFile $destination
 7z x $destination -ofolder
 
-Copy-Item -Path "$home\Downloads\folder" -Destination "\\sec.core\files\Developers\webpage" -Recurse -force
+Copy-Item -Path "$home\Downloads\folder" -Destination "\\sec.core\files\Public\webpage" -Recurse -force
+
+$scriptBlock = {
+    Install-WindowsFeature -Name Web-Server -IncludeManagementTools
+    Copy-Item -Path "\\sec.core\files\Public\webpage\*" -Destination "C:\inetpub\wwwroot" -Recurse -Force
+}
+
+Invoke-Command -ComputerName "srv1" -ScriptBlock $scriptBlock
