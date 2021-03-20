@@ -35,13 +35,14 @@ For ressursene i bedriften er det opprettet en OU pr. ressurs. Pr. nå har vi op
  PC'er (cl1 i vårt tilfelle) og serverne i AD-strukturen har hver sin OU under On-prem, samt en egen gruppe. Dette tillater å deligere spesifikke restriksjoner/begrensinger til de ulike maskinene. 
 
 
-
 ## Navnekonvensjon 
-Ved opprettelse av objekter i vårt domene har vi valgt å implementere en fast navnestandard. Det vil si at noen av objektene som opprettes får en fast prefiks bokstav etterfulgt av_. F.eks. grupper får prefiks 'G_' etterfulgt av navnet. For OUer er 'U_' brukt for de som inneholder brukere (users) mens 'R_' er brukt for ressurser. Alle GPO'er vi oppretter starter med 'GPO_' etterfulgt av navnet på OU'en den skal linkes til.  FORKLARE HVORFOR (?)
+Ved opprettelse av objekter i vårt domene har vi valgt å implementere en fast navnestandard. Det vil si at noen av objektene som opprettes får en fast prefiks bokstav etterfulgt av_. F.eks. grupper får prefiks 'G_' etterfulgt av navnet. For OUer er 'U_' brukt for de som inneholder brukere (users) mens 'R_' er brukt for OU'er under ressurser. Alle GPO'er vi oppretter starter med 'GPO_' etterfulgt av navnet på OU'en den skal linkes til. 
 
 ## Forklaring / visning av hvert enkelt script
 
 ### Filer som parameter
+For hvert script som oppretter et eller flere objekter, har vi implementert at de skal sende med en .CSV fil. Filen inneholder strukturen av objektene som skal opprettes i domenet i deg gjeldene scriptet. Ved å sende med filer som parameter gjør vi det enkelt å endre/legge til objekter i domenet. Det gir også mulgihetet for fleksibilitet ved bruk av script i andre domener eller bedrifter. 
+
 
 ### Add OU's
 
@@ -52,39 +53,44 @@ Ved opprettelse av objekter i vårt domene har vi valgt å implementere en fast 
 ### Add Groups
 [ScriptADGroups.ps1](https://gitlab.stud.idi.ntnu.no/andrefm/albegra-a2/-/tree/master/Groups) bygger på samme prinsipp som [ScriptADOrganizationUnit.ps1](https://gitlab.stud.idi.ntnu.no/andrefm/albegra-a2/-/blob/master/Groups/ScriptADGroups.ps1) , og oppretter Grupper i OU strukturen basert på medsendt [CSV](https://gitlab.stud.idi.ntnu.no/andrefm/albegra-a2/-/blob/master/Groups/GroupStructure.csv) fil. 
 
-    NB! Standard opprettelse av gruppene er Group Scope default satt til Global, men ressursene i domene (adgangskort og Skrivere) har vi satt til Domain Local.  
+    NB! Standard opprettelse av gruppene er Group Scope default satt til Global, men ressursene i domene (Adgangskort og Skrivere) har vi satt Group Scope til Domain Local.  
 
 
 <br>
 
 ### Add User
+-
 ### Organisering av struktur
-Når OU'er, grupper og brukere er opprettet i domenet, kjøres [Organize-GroupsAndComputers.ps1](https://gitlab.stud.idi.ntnu.no/andrefm/albegra-a2/-/blob/master/Organize-GroupsAndComputers.ps1) for å "rydde opp" strukturen. Kort fortalt legger den alle brukere inn i tilhørende grupper, undergrupper legges inn i hovedgrupper og maskiner flyttes inn i tilhørende OU'er. Vi har laget en mulighet for kun å organisere maskiner eller grupper/brukere ved senere bruk.  
+Når OU'er, grupper og brukere er opprettet i domenet, kjøres [Organize-GroupsAndComputers.ps1](https://gitlab.stud.idi.ntnu.no/andrefm/albegra-a2/-/blob/master/Organize-GroupsAndComputers.ps1) for å "rydde opp" i strukturen. Kort fortalt legger den alle brukere inn i tilhørende grupper, undergrupper legges inn i hovedgrupper og maskiner flyttes inn i tilhørende OU'er. Vi har laget en mulighet for kun å organisere maskiner eller grupper/brukere hvis ønskelig.  
 
 <br>
 
 ### GPO
-Som henvist i [GPO.MD](https://gitlab.stud.idi.ntnu.no/andrefm/albegra-a2/-/blob/master/GPO.md) er inspirasjon til GPO'er hentet fra blant annet  [Lepide](https://www.lepide.com/blog/top-10-most-important-group-policy-settings-for-preventing-security-breaches/).
+Som henvist i [GPO.MD](https://gitlab.stud.idi.ntnu.no/andrefm/albegra-a2/-/blob/master/GPO.md) er inspirasjon til GPO'er under hentet fra blant annet  [Lepide](https://www.lepide.com/blog/top-10-most-important-group-policy-settings-for-preventing-security-breaches/).
 
-Vi har valgt ut noen GPO'er som vi føler er essensielle for sikkerhet ved oppstart av en AD struktur. 
+Vi har valgt ut noen GPO'er som vi føler er essensielle for sikkerhet ved oppstart av en AD struktur. Det legges vekt på at GPO'ene valgt her ikke gir best mulig sikkerhet, men er GPO'er vi har valgt "å teste" i domenet. Dette er gjort for å utvikle kunnskap om hvordan GPO fungerer. 
+Ved et reelt oppsett av et domene ville vi brukt blant annet [Windows security baselines](https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-security-baselines) for sikring av ressurser (?). 
 
+Oppsettet setter en del restriksjoner på de ansatte i bedriften ved bruk av Control Panel, Comand prompt, programvareinstalasjon og passordlengde. I tillegg er det opprettet en GPO linket til OU'en PC (cl1) som tilater alle medlemer av gruppen G_ansatte å koble seg på ved bruk av RDP. 
 
-Oppsettet setter en del restriksjoner på de ansatte i bedriften ved bruk av Control Panel, Comand prompt, programvare instasasjon og passordlengde. I tillegg er det opprettet en GPO linket til CL1(ISHHHHH), som lar alle ansatte i bedriften logge på maskinen. 
+IT-administratorene på sin side har disse begrensningene fjernet (Med unntak av passordlenge). Gjennom GPO får IT-avdelingen administratorrettigheter. Dette gir avdelingen blant annet mulighet for RDP til DC1 og SRV1 samt mulgihet for å administrere domenet fra Cl1. 
 
-IT-administratorene på sin side har disse begrensningene fjernet (Med unntak av passordlenge). Gjennom GPO får IT-avdelingen Administratorrettigheter, dette gir avdelingen blant annet mulighet for RDP til DC1 og SRV1 samt mulgihet for å administrere domenet. 
-
-
-<br>
-
-<br>
 
 ### Share
+- link til scriptet
+- et share pr avdeling som i oppgavebeskrivelsen 
+- tar inn en CSV fil 
+- tilgangstyring
+- et felles filområde --> IIS
 
 ### Install-IIS
-
+- lagres på felles Filområde
+- en valgt nettside 
+- 
 
 ## Drøfting
-- intro
+I denne seksjonen skal vi drøfte ulike aspekter rundt designet vi har utviklet under dette prosjektet. 
+
 - sikkrehetsaspekter 
 - Fordeler/ulemper
   - Med tanke på oppsett, Scripts, etc
@@ -113,4 +119,4 @@ GPO'er:
 - arbeidsprosessen
 - hvilke muligheter dette gir oss vidre
 
-## av Andreas og Kristoffer
+## av Andreas Magnussen og Kristoffer Lie
