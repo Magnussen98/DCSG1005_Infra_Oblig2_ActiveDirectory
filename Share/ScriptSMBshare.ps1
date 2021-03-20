@@ -4,7 +4,7 @@ param(
     [string] $file
 )
 
-Enter-PSSession srv1
+    
 #inslall module on srv1
 Install-WindowsFeature -Name FS-DFS-Namespace,FS-DFS-Replication,RSAT-DFS-Mgmt-Con -IncludeManagementTools
 Import-Module dfsn
@@ -23,8 +23,7 @@ $folders | ForEach-Object {
         New-SMBShare -Name $GroupName -Path $path -FullAccess "Everyone"
     } else {
         $access = "sec\G_" + $GroupName
-        #New-SMBShare -Name $GroupName -Path $path -FullAccess $access
-        New-SMBShare -Name $GroupName -Path $path -FullAccess "Everyone"
+        New-SMBShare -Name $GroupName -Path $path -FullAccess $access
     }
 }
 
