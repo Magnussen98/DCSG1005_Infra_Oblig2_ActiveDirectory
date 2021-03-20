@@ -19,7 +19,6 @@
 4. Konklusjon
 
 
-
 ## Mål med prosjektet
 
 Gjennom dette semesteret har vi lært om Windows Server, Active Directory(AD), Powershell og kofugurasjon av nettverk.   
@@ -36,11 +35,11 @@ For ressursene i bedriften er det opprettet en OU pr. ressurs. Pr. nå har vi op
 
 
 ## Navnekonvensjon 
-Ved opprettelse av objekter i vårt domene har vi valgt å implementere en fast navnestandard. Det vil si at noen av objektene som opprettes får en fast prefiks bokstav etterfulgt av_. F.eks. grupper får prefiks 'G_' etterfulgt av navnet. For OUer er 'U_' brukt for de som inneholder brukere (users) mens 'R_' er brukt for OU'er under ressurser. Alle GPO'er vi oppretter starter med 'GPO_' etterfulgt av navnet på OU'en den skal linkes til. 
+Ved opprettelse av objekter i vårt domene har vi valgt å implementere en fast navnestandard. Det vil si at noen av objektene som opprettes får en fast prefiks bokstav etterfulgt av_. F.eks. grupper får prefiks 'G_' etterfulgt av navnet. For OUer er 'U_' brukt for de som inneholder brukere (users). Alle GPO'er vi oppretter starter med 'GPO_' etterfulgt av navnet på OU'en den skal linkes til. 
 
 ## Forklaring / visning av hvert enkelt script
 
-### Filer som parameter
+### Filer som medsendt parameter
 For hvert script som oppretter et eller flere objekter, har vi implementert at de skal sende med en .CSV fil. Filen inneholder strukturen av objektene som skal opprettes i domenet i deg gjeldene scriptet. Ved å sende med filer som parameter gjør vi det enkelt å endre/legge til objekter i domenet. Det gir også mulgihetet for fleksibilitet ved bruk av script i andre domener eller bedrifter. 
 
 
@@ -48,7 +47,6 @@ For hvert script som oppretter et eller flere objekter, har vi implementert at d
 
 [ScriptADOrganizationUnit.ps1](https://gitlab.stud.idi.ntnu.no/andrefm/albegra-a2/-/blob/master/OU/ScriptADOrganizationUnit.ps1) er inspirert av [Eric Magidson](https://www.youtube.com/watch?v=eIY1Plo7wXQ&t=37s). Scriptet tar inn en [CSV](https://gitlab.stud.idi.ntnu.no/andrefm/albegra-a2/-/blob/master/OU/OUStructure.csv) fil som inneholder OU-strukturen. Ved bruk av innholdet etablerer scriptet OU-strukturen i domenet. 
 
-<br>
 
 ### Add Groups
 [ScriptADGroups.ps1](https://gitlab.stud.idi.ntnu.no/andrefm/albegra-a2/-/tree/master/Groups) bygger på samme prinsipp som [ScriptADOrganizationUnit.ps1](https://gitlab.stud.idi.ntnu.no/andrefm/albegra-a2/-/blob/master/Groups/ScriptADGroups.ps1) , og oppretter Grupper i OU strukturen basert på medsendt [CSV](https://gitlab.stud.idi.ntnu.no/andrefm/albegra-a2/-/blob/master/Groups/GroupStructure.csv) fil. 
@@ -63,13 +61,13 @@ For hvert script som oppretter et eller flere objekter, har vi implementert at d
 ### Organisering av struktur
 Når OU'er, grupper og brukere er opprettet i domenet, kjøres [Organize-GroupsAndComputers.ps1](https://gitlab.stud.idi.ntnu.no/andrefm/albegra-a2/-/blob/master/Organize-GroupsAndComputers.ps1) for å "rydde opp" i strukturen. Kort fortalt legger den alle brukere inn i tilhørende grupper, undergrupper legges inn i hovedgrupper og maskiner flyttes inn i tilhørende OU'er. Vi har laget en mulighet for kun å organisere maskiner eller grupper/brukere hvis ønskelig.  
 
-<br>
+
 
 ### GPO
 Som henvist i [GPO.MD](https://gitlab.stud.idi.ntnu.no/andrefm/albegra-a2/-/blob/master/GPO.md) er inspirasjon til GPO'er under hentet fra blant annet  [Lepide](https://www.lepide.com/blog/top-10-most-important-group-policy-settings-for-preventing-security-breaches/).
 
-Vi har valgt ut noen GPO'er som vi føler er essensielle for sikkerhet ved oppstart av en AD struktur. Det legges vekt på at GPO'ene valgt her ikke gir best mulig sikkerhet, men er GPO'er vi har valgt "å teste" i domenet. Dette er gjort for å utvikle kunnskap om hvordan GPO fungerer. 
-Ved et reelt oppsett av et domene ville vi brukt blant annet [Windows security baselines](https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-security-baselines) for sikring av ressurser (?). 
+Vi har valgt ut noen GPO'er som vi føler er essensielle for sikkerhet ved oppstart av en AD struktur. Det legges vekt på at GPO'ene valgt her ikke gir best mulig sikkerhet, men er GPO'er vi har valgt "å teste" i domenet. Dette er gjort for å utvikle kunnskap om hvordan GPO fungerer i en AD-struktur. 
+
 
 Oppsettet setter en del restriksjoner på de ansatte i bedriften ved bruk av Control Panel, Comand prompt, programvareinstalasjon og passordlengde. I tillegg er det opprettet en GPO linket til OU'en PC (cl1) som tilater alle medlemer av gruppen G_ansatte å koble seg på ved bruk av RDP. 
 
@@ -101,7 +99,6 @@ I denne seksjonen skal vi drøfte ulike aspekter rundt designet vi har utviklet 
   - Scriptene simplifiserer drift av systemene
   - hva har vi ikke med/ønsker å ta med i en reell sammenheng
 
-Her drøfter vi sikkerhetsaspekter, oppsett, fordeler/ulemper med mer .... 
 
 Felles for alle scriptene er at de tar inn filer som parameter for oppsett 
 
@@ -109,8 +106,13 @@ Forklaring hvorfor domain Local og Global --> groups
 
 globale og lokale sikkerhetsgrupper 
 
+Gruppene i domenet 
+Administratorrettigheter for IT-admins er gitt ved at gruppen er medlem av den lokale gruppen Administrators, gitt gjennom GPO. 
+
+
 GPO'er: 
-- Comand prompt disablet, men de har tilgang til powershell .. 
+  En GPO vi vil drøfte rundt er Comand Prompt. Vi har for de ansatte i bedriften (utenom IT-avdelingen) valgt å deaktivere denne da appen gir brukere mulighet for å kjøre høy-nivå komandoer, uten administrator rettigheter, i følge [Lepide](https://www.lepide.com/blog/top-10-most-important-group-policy-settings-for-preventing-security-breaches/). [PWSH HER](https://www.itprotoday.com/powershell/disabling-powershell) Ved et reelt oppsett av et domene ville vi brukt blant annet [Windows security baselines](https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-security-baselines) for sikring av Active Directory. 
+ 
 - IKKE SIKKERT NOK, MEN ET HAR FÅTT TESTET OSS PÅ GPO
 
 ## Konklusjon
@@ -118,5 +120,7 @@ GPO'er:
 - hva vi synes om oppgaven
 - arbeidsprosessen
 - hvilke muligheter dette gir oss vidre
+- Sammarbeid 
+  - forskjellig kompentanse, men felles interesse for et godt produkt 
 
 ## av Andreas Magnussen og Kristoffer Lie
