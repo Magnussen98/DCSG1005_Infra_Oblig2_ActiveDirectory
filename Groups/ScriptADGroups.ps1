@@ -3,6 +3,7 @@ param(
     [parameter(mandatory=$true)]
     [string] $file
 )
+
 if ( (Get-Item $file).Extension -eq ".csv"){
      #Filen "GroupStructure.csv inneholder Gruppestrukturen, og kan enkelt endres"
     Get-Content $file | ForEach-Object{
@@ -19,7 +20,7 @@ if ( (Get-Item $file).Extension -eq ".csv"){
             $GroupPath += $domainName
 
             $newGroupName = split-path $_ -Leaf
-
+        ##sjekk som setter Ressurser sin Groupe scope til Domain local. Default er Global
         if($GroupPath -like "OU=R_*"){
              New-ADGroup -GroupCategory Security -GroupScope DomainLocal -Name  "G_$newGroupName" -Path $GroupPath
         }
