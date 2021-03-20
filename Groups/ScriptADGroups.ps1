@@ -5,8 +5,16 @@ param(
 )
 
 if ( (Get-Item $file).Extension -eq ".csv"){
+
      #Filen "GroupStructure.csv inneholder Gruppestrukturen, og kan enkelt endres"
-    Get-Content $file | ForEach-Object{
+    $fileContent = Get-Content $file
+
+    $scriptBlock = {
+        param(
+            $content
+        )
+
+        $content| ForEach-Object{
         $domainName = 'DC=sec,DC=core'
         $GroupPath = ''
         $Group = (Split-Path $_ -Parent).Split('\')
@@ -27,5 +35,7 @@ if ( (Get-Item $file).Extension -eq ".csv"){
         else{
             New-ADGroup -GroupCategory Security -GroupScope Global -Name  "G_$newGroupName" -Path $GroupPath
         }
+        }
     }
+    Invoke-Command -ComputerName dc1 -ScriptBlock $scriptBlock -ArgumentList (,$fileContent)
 }

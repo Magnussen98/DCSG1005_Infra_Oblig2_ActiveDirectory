@@ -8,7 +8,13 @@ param(
 if ( (Get-Item $file).Extension -eq ".csv"){
 
     #Filen "OUstructure.csv inneholder OU strukturen, og kan enkelt endres"
-    Get-Content $file | ForEach-Object{
+    $fileContent = Get-Content $file
+
+    $scriptBlock = {
+        param(
+            $content
+        )
+        $content | ForEach-Object{
         $domainName = 'DC=sec,DC=core'
         $ouPath = ''
             #OU(Organizational Unit) og lager et reversjert array, slik at det leses fra toppen
@@ -25,7 +31,12 @@ if ( (Get-Item $file).Extension -eq ".csv"){
 
             #protect from accidential deletion kun i testing, fernes naar produkt skal realiseres
         New-ADOrganizationalUnit -Name $newOUName -Path $ouPath -ProtectedFromAccidentalDeletion $false
+        }
     }
+
+    Invoke-Command -ComputerName dc1 -ScriptBlock $scriptBlock  -ArgumentList (,$fileContent)
+
+    
 } else {
     Write-Output "Filen er ikke en '.csv' fil"
 }
