@@ -44,3 +44,11 @@ Dette scriptet må kjøres fra: Srv1
 Dette scriptet oppretter delte mapper og knytter disse mappene til domenet. Dette s
 
 ## 
+
+Dette scriptet oppretter delte mapper og knytter disse mappene til domenet. Disse mappene blir også knyttet opp til de spesifikke avdelingene, som gjør at brukerne innenfor disse avdelingene er de eneste som kan aksessere mappen.
+
+## Installering av IIS
+Det 7. scriptet er: [Install-IIS.ps1](https://gitlab.stud.iie.ntnu.no/andrefm/albegra-a2/-/blob/master/Install-IIS.ps1)
+Dette scriptet skal kjøres på: Cl1
+
+Dette scriptet innstallerer "web-server" på Srv1 og laster ned en [template](https://www.free-css.com/free-css-templates) som blir brukt som nettsiden til srv1.
