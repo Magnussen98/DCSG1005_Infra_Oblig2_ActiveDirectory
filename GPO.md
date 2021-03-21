@@ -5,7 +5,7 @@ Inspirasjon til GPO er hentet fra [Lepide](https://www.lepide.com/blog/top-10-mo
 
 For ansatte ønsker vi å gi restriksjoner slik at de ikke har tilgang til for ekempel Kontorllpalenet eller andre applikasjoner de kan utføre sikkerhetstruende handlinger. Restriksjonene vi har valgt å i tillegg til Knotrollpanelet nevnt over er comand prompt og programvareinstalsjon. Det er også satt at minste passordlengde er 10 karakterer. GPO er for de ansatte i bedriften er også brukt til å sette defaukt startpage i Internett Explorer.
 
-IT-avdelingen har på sin side fått disse restiksjonene opphevet da de skal utføre administrative oppgaver i domenet. Derfor er avdelingen gitt admin rettigheter. Dette gir brukerne i avdelingen mulighet for RDP til alle maskiner i domenet. CL1 sin GPO tillater at alle som er medlem av gruppen G_ansatt kan koble seg opp via RDP. Under viser vi hvordan en oppretter GPOene manuelt:
+IT-avdelingen har på sin side fått disse restiksjonene opphevet da de skal utføre administrative oppgaver i domenet. Derfor er avdelingen gitt admin rettigheter. Dette gir brukerne i avdelingen mulighet for RDP til alle maskiner i domenet. CL1 sin GPO tillater at alle som er medlem av Domain Local gruppen G_ansatt kan koble seg opp via RDP. Under viser vi hvordan en oppretter GPOene manuelt:
 
 
 ## Ansatt
@@ -73,7 +73,7 @@ Gå til:
 ### Administrator 
     Åpne Browse for a Group Policy Object med komandoen "gpme" i PowerShell. 
     Påse at du står i  "sec.core"
-    Høyreklikk -> new og gi den navnet GPO_Admin_Rettigheter
+    Høyreklikk -> new og gi den navnet GPO_IT-Admin_Rettigheter 
     Dobbletklikk for å endre objektet. 
 
 Gå til:
