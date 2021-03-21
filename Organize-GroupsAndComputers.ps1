@@ -6,7 +6,7 @@ param(
 
 ########################### IMPORTANT DECLARATIONS  ###########################
 
-$parentGroup = ("G_Ansatt", "G_Ressurser", "G_On-prem")
+$parentGroup = ("G_Ansatt", "G_On-prem")
 $isParam = [bool]($option)      #Check if a parameter is sent or not
 
 ########################### FUNCTIONS   ######################################

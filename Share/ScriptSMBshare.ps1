@@ -19,7 +19,7 @@ mkdir -path $folders
 $folders | ForEach-Object {
     $GroupName = (Get-Item $_).name
     $path = $_
-    if ($GroupName -eq 'files'){
+    if ($GroupName -eq 'files' -or $GroupName -eq "Public"){
         New-SMBShare -Name $GroupName -Path $path -FullAccess "Everyone"
     } else {
         $access = "sec\G_" + $GroupName
