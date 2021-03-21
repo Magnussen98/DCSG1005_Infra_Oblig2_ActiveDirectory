@@ -29,7 +29,7 @@ if ( (Get-Item $file).Extension -eq ".csv"){
 
             $newGroupName = split-path $_ -Leaf
             ##sjekk som setter Ressurser sin Groupe scope til Domain local. Default er Global
-            if($GroupPath -like "OU=Ressurser*"){
+            if($GroupPath -like "OU=Ansatt*" -or  $GroupPath -like "OU=On-Prem*" -or $GroupPath -like "OU=Ressurser*"){
                  New-ADGroup -GroupCategory Security -GroupScope DomainLocal -Name  "G_$newGroupName" -Path $GroupPath
             }
             else{
