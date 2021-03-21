@@ -75,14 +75,18 @@ if ( $option -eq "Computers" -or (-not $isParam) ){
     if ($allComputers) {
         $computers = ("CL", "SRV")   #Client and Server
         foreach ($computer in $computers) {
-            $everyComputer = Get-ADComputer -filter * -SearchBase "CN=Computers,DC=sec,DC=core" | Where-Object{$_.name -match $computer}
+            $everyComputer = $allComputers | Where-Object{$_.name -match $computer}
             if ($everyComputer){
                 if ($computer -eq "CL"){
                     $OU = "PC"
+                    $group = "G_PC" #Security group
                 } else {
                     $OU = "Server"
+                    $group = "G_Server" #Security group
                 }
                 $everyComputer | Move-ADObject -TargetPath (Get-DistinguishedName -type "OU" -department $ou)
+                #Adding the computer to the correct security group
+                Add-ADGroupMember -Members $everyComputer -identity (Get-DistinguishedName -type "Group" -department $group)
             }
         }
     }
