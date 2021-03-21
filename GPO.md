@@ -1,7 +1,7 @@
 # GPO Struktur: 
 For opprettelse av GPO bruker vi GUI. 
 
-Inspirasjon til GPO er hentet fra [Lepide](https://www.lepide.com/blog/top-10-most-important-group-policy-settings-for-preventing-security-breaches/). 
+Inspirasjon til GPO er hentet fra [Lepide](https://www.lepide.com/blog/top-10-most-important-group-policy-settings-for-preventing-security-breaches/) og undervisninger. 
 
 For ansatte ønsker vi å gi restriksjoner slik at de ikke har tilgang til for ekempel Kontorllpalenet eller andre applikasjoner de kan utføre sikkerhetstruende handlinger. Restriksjonene vi har valgt å i tillegg til Knotrollpanelet nevnt over er comand prompt og programvareinstalsjon. Det er også satt at minste passordlengde er 10 karakterer. GPO er for de ansatte i bedriften er også brukt til å sette defaukt startpage i Internett Explorer.
 
