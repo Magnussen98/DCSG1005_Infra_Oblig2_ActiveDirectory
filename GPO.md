@@ -33,7 +33,15 @@ Gå til:
     Computer Configuration -> Policies -> Windows Settings -> Security Settings -> Account -> Policies -> Password Policy
     Dobbeltrykk "Minimum Password Length" -> 10 -> klikk Apply --> ok
 
+### Sette IIS som "default startpage" '
+Gå til: 
 
+    User Configuration -> Policies -> Administrative Templates -> Windows Components -> Internet Explorer.
+    Finn  "Disable changing home page settings", ca midt på. Dobbeltklikk -> enable 
+    Finn frem IP-adressen til SRV1 (server brukt til oppsett av IIS), og lim den inn under homepage
+    Klikk apply --> ok og lukk fanen. 
+
+    
 ## IT-admin
 
     Åpne Browse for a Group Policy Object med komandoen "gpme" i PowerShell. 
