@@ -29,8 +29,8 @@ if ( (Get-Item $file).Extension -eq ".csv"){
         $ouPath += $domainName
         $newOUName = split-path $_ -Leaf
 
-            #protect from accidential deletion kun i testing, fernes naar produkt skal realiseres
-        New-ADOrganizationalUnit -Name $newOUName -Path $ouPath -ProtectedFromAccidentalDeletion $false
+          ##oppreter OUer 
+        New-ADOrganizationalUnit -Name $newOUName -Path $ouPath 
         }
     }
 
